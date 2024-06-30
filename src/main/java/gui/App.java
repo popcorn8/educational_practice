@@ -1,7 +1,16 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import graph.*;
 
 public class App extends JFrame {
     int DEFAULT_WIDTH = 800;
@@ -15,7 +24,7 @@ public class App extends JFrame {
     private JButton DeleteButton;
     private JButton DownloadButton;
     private JButton UploadButton;
-    private JPanel GraphPanel;
+    private JPanel graph_panel;
     private JScrollPane ConsolePanel;
     private JButton StartButton;
     private JButton PrevStepButton;
@@ -33,10 +42,11 @@ public class App extends JFrame {
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width/2 - DEFAULT_WIDTH/2, dimension.height/2 - DEFAULT_HEIGHT/2, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        setBounds(dimension.width / 2 - DEFAULT_WIDTH / 2, dimension.height / 2 - DEFAULT_HEIGHT / 2, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         setContentPane(MainPanel);
-        GraphPanel.setPreferredSize(new Dimension(3*MainPanel.getWidth()/4, MainPanel.getHeight()));
-        ToolsPanel.setPreferredSize(new Dimension(MainPanel.getWidth()/4, MainPanel.getHeight()));
+//        GraphPanel.setPreferredSize(new Dimension(3 * MainPanel.getWidth() / 4, MainPanel.getHeight()));
+//        ToolsPanel.setPreferredSize(new Dimension(MainPanel.getWidth() / 4, MainPanel.getHeight()));
+
 
         setIcon(DrawButton, "src/main/resources/draw_icon.png");
         setIcon(EditButton, "src/main/resources/edit_icon.png");
@@ -46,8 +56,6 @@ public class App extends JFrame {
         setIcon(StartButton, "src/main/resources/start_icon.png");
         setIcon(PrevStepButton, "src/main/resources/prev_step_icon.png");
         setIcon(NextStepButton, "src/main/resources/next_step_icon.png");
-
-
     }
 
     public static void setIcon(JButton button, String image_path) {
@@ -60,4 +68,7 @@ public class App extends JFrame {
         button.setOpaque(false);
     }
 
+    private void createUIComponents() {
+        graph_panel = new GraphPanel();
+    }
 }
