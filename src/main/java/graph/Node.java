@@ -18,6 +18,10 @@ public class Node {
         return radius;
     }
 
+    public void setPoint(int x, int y) {
+        this.point.setLocation(x, y);
+    }
+
     public boolean contains(int x, int y) {
         return point.distance(x, y) <= radius;
     }

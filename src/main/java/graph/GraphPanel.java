@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +20,6 @@ public class GraphPanel extends JPanel {
     private Color vertexColor = Color.BLACK;
     private Color edgeColor = Color.BLACK;
     private int edgeThickness = 3;
-
 
     public GraphPanel() {
         nodes = new ArrayList<>();
@@ -48,6 +48,11 @@ public class GraphPanel extends JPanel {
                         }
                     }
                     repaint();
+                } else if (SwingUtilities.isMiddleMouseButton(e)) {
+                    Node node = findNode(e.getX(), e.getY());
+                    if (node != null) {
+                        selectedNode = node;
+                    }
                 }
             }
 
@@ -61,6 +66,18 @@ public class GraphPanel extends JPanel {
                         }
                         selectedNode = null;
                     }
+                    repaint();
+                } else if (SwingUtilities.isMiddleMouseButton(e)) {
+                    selectedNode = null;
+                }
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e) && selectedNode != null) {
+                    selectedNode.setPoint(e.getX(), e.getY());
                     repaint();
                 }
             }
@@ -128,6 +145,4 @@ public class GraphPanel extends JPanel {
                     2 * node.getRadius(), 2 * node.getRadius());
         }
     }
-
-
 }
