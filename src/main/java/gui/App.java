@@ -1,16 +1,10 @@
 package gui;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Line2D;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.awt.event.ActionEvent;
 
-import graph.*;
+import utils.GraphPanelStates;
 
 public class App extends JFrame {
     int DEFAULT_WIDTH = 800;
@@ -31,22 +25,65 @@ public class App extends JFrame {
     private JButton NextStepButton;
     private JPanel ControlPanel;
     private JTextArea ConsoleTextArea;
+    private JTextArea HelpText;
 
     public App() {
         setResizable(false);
-        setVisible(true);
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension dimension = toolkit.getScreenSize();
+        setBounds(dimension.width / 2 - DEFAULT_WIDTH / 2, dimension.height / 2 - DEFAULT_HEIGHT / 2, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ImageIcon icon = new ImageIcon("src/main/resources/main_icon.png");
         setIconImage(icon.getImage());
         setTitle(Title);
+        HelpText.setFont(new Font(HelpText.getFont().getName(), HelpText.getFont().getStyle(), 12));
+        HelpText.setText("""
+                Нажмите ЛКМ чтобы добавить вершины и связать их ребром.
+                Нажмите ПКМ чтобы удалить вершину/ребро.
+                Нажмите и удерживайте колесико, чтобы перетащить вершину.""");
 
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width / 2 - DEFAULT_WIDTH / 2, dimension.height / 2 - DEFAULT_HEIGHT / 2, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        DeleteButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) graph_panel;
+                g.clearGraph();
+            }
+        });
+
+        DrawButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) graph_panel;
+                g.setState(GraphPanelStates.GRAPH_DRAWING);
+            }
+        });
+
+        EditButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) graph_panel;
+                g.setState(GraphPanelStates.WEIGHT_CHANGING);
+            }
+        });
+
+        UploadButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) graph_panel;
+                g.saveGraph("src/main/resources/graph.txt");
+            }
+        });
+
+        DownloadButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) graph_panel;
+                g.loadGraph("src/main/resources/graph.txt");
+            }
+        });
+
         setContentPane(MainPanel);
-//        GraphPanel.setPreferredSize(new Dimension(3 * MainPanel.getWidth() / 4, MainPanel.getHeight()));
-//        ToolsPanel.setPreferredSize(new Dimension(MainPanel.getWidth() / 4, MainPanel.getHeight()));
-
+        setVisible(true);
 
         setIcon(DrawButton, "src/main/resources/draw_icon.png");
         setIcon(EditButton, "src/main/resources/edit_icon.png");
@@ -66,9 +103,12 @@ public class App extends JFrame {
         button.setBorderPainted(false);
 //        button.setFocusPainted(false);
         button.setOpaque(false);
+
+
     }
 
     private void createUIComponents() {
         graph_panel = new GraphPanel();
     }
+
 }
