@@ -188,17 +188,31 @@ public class GraphPanel extends JPanel {
                 int midX = (p1.x + p2.x) / 2;
                 int midY = (p1.y + p2.y) / 2;
 
-                // Offset the label position slightly
-                int offsetX = 10;
-                int offsetY = 10;
+                int squareSize = 20;
 
-                // Create a bold font
-                Font boldFont = g2d.getFont().deriveFont(Font.BOLD, 12f);
-                g2d.setFont(boldFont);
-                g2d.setColor(Color.BLUE); // Set label color
+                // Позиция метки
+                int squareX = midX - squareSize / 2;
+                int squareY = midY - squareSize / 2;
 
-                // Draw the string with an offset
-                g2d.drawString(label, midX + offsetX, midY - offsetY);
+                // Залить рамку белым цветом
+                g2d.setColor(Color.WHITE);
+                g2d.fillRect(squareX, squareY, squareSize, squareSize);
+
+                // Нарисовать контур черным цветом
+                g2d.setColor(Color.BLACK);
+                g2d.setStroke(new BasicStroke(1));
+                g2d.drawRect(squareX, squareY, squareSize, squareSize);
+
+                // Позиция текста (чтобы текст был в центре квадрата)
+                FontMetrics fm = g2d.getFontMetrics();
+                int textWidth = fm.stringWidth(label);
+                int textHeight = fm.getAscent();
+
+                int textX = squareX + (squareSize - textWidth) / 2;
+                int textY = squareY + ((squareSize - textHeight) / 2) + fm.getAscent();
+
+                // Нарисовать текст
+                g2d.drawString(label, textX, textY);
             }
         }
 
@@ -206,8 +220,8 @@ public class GraphPanel extends JPanel {
             g2d.setColor(node.getColor());
             g2d.fillOval(node.getPoint().x - node.getRadius(), node.getPoint().y - node.getRadius(),
                     2 * node.getRadius(), 2 * node.getRadius());
-            g2d.drawOval(node.getPoint().x - node.getRadius(), node.getPoint().y - node.getRadius(),
-                    2 * node.getRadius(), 2 * node.getRadius());
+//            g2d.drawOval(node.getPoint().x - node.getRadius(), node.getPoint().y - node.getRadius(),
+//                    2 * node.getRadius(), 2 * node.getRadius());
         }
     }
 

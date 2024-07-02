@@ -11,7 +11,7 @@ public class Edge extends JComponent {
     private String label;
 
     public Edge(Node start, Node end) {
-        this(start, end, Color.BLACK, 3, "");
+        this(start, end, Color.BLACK, 2, "");
     }
 
     public Edge(Node start, Node end, Color color, int thickness, String label) {

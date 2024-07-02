@@ -9,7 +9,7 @@ import utils.GraphPanelStates;
 public class App extends JFrame {
     int DEFAULT_WIDTH = 800;
     int DEFAULT_HEIGHT = 600;
-    String Title = "Facebook";
+    String Title = "KruskalLimitedEdition.official.feat(Romchik,Danchik,Dianchik)";
 
     private JPanel MainPanel;
     private JPanel ToolsPanel;
@@ -41,6 +41,7 @@ public class App extends JFrame {
                 Нажмите ЛКМ чтобы добавить вершины и связать их ребром.
                 Нажмите ПКМ чтобы удалить вершину/ребро.
                 Нажмите и удерживайте колесико, чтобы перетащить вершину.""");
+
 
         DeleteButton.addActionListener(new AbstractAction() {
             @Override
