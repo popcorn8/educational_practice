@@ -43,6 +43,10 @@ public class App extends JFrame {
                 Нажмите ПКМ чтобы удалить вершину/ребро.
                 Нажмите и удерживайте колесико, чтобы перетащить вершину.""");
 
+        ConsoleTextArea.setFont(new Font(HelpText.getFont().getName(), HelpText.getFont().getStyle(), 12));
+        ConsoleTextArea.setLineWrap(true);
+        ConsoleTextArea.setWrapStyleWord(true);
+
         DeleteButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,7 +91,23 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 GraphPanel g = (GraphPanel) GraphEditPanel;
-                g.kruskalAlgorithmFunc();
+                g.kruskalAlgorithmFunc(ConsoleTextArea);
+            }
+        });
+
+        NextStepButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) GraphEditPanel;
+                g.kruskalNextStep(ConsoleTextArea);
+            }
+        });
+
+        PrevStepButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) GraphEditPanel;
+                g.kruskalPrevStep(ConsoleTextArea);
             }
         });
 
