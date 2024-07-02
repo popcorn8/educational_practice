@@ -26,14 +26,14 @@ public class Graph {
         Iterator<Edge> iterator = edges.iterator();
         while (iterator.hasNext()) {
             Edge edge = iterator.next();
-            if (edge.getStart() == node || edge.getEnd() == node) {
+            if (edge.getStart().equals(node) || edge.getEnd().equals(node)) {
                 iterator.remove();
             }
         }
     }
 
-    public void addEdge(Node start, Node end, Color color, int thickness) {
-        edges.add(new Edge(start, end, color, thickness));
+    public void addEdge(Node start, Node end, Color color, int thickness, String label) {
+        edges.add(new Edge(start, end, color, thickness, label));
     }
 
     public void removeEdge(Edge edge) {
@@ -64,7 +64,6 @@ public class Graph {
         nodes.clear();
         edges.clear();
         //TODO: не забыть добавить repaint(); при нажатии удаления.
-
     }
 
     private boolean isPointNearLine(int x, int y, int x1, int y1, int x2, int y2) {
@@ -99,10 +98,11 @@ public class Graph {
                     int g = Integer.parseInt(parts[4]);
                     int b = Integer.parseInt(parts[5]);
                     int thickness = Integer.parseInt(parts[6]);
+                    String label = parts[7];
                     Color color = new Color(r, g, b);
 
                     if (startIdx < fileNodes.size() && endIdx < fileNodes.size()) {
-                        addEdge(fileNodes.get(startIdx), fileNodes.get(endIdx), color, thickness);
+                        addEdge(fileNodes.get(startIdx), fileNodes.get(endIdx), color, thickness, label);
                     }
                 }
             }
@@ -113,18 +113,16 @@ public class Graph {
 
     public void saveGraph(String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
-            for (int i = 0; i < nodes.size(); i++) {
-                Node node = nodes.get(i);
+            for (Node node : nodes) {
                 bw.write(String.format("N %d %d\n", node.getPoint().x, node.getPoint().y));
             }
-            for (int i = 0; i < edges.size(); i++) {
-                Edge edge = edges.get(i);
+            for (Edge edge : edges) {
                 int startIdx = nodes.indexOf(edge.getStart());
                 int endIdx = nodes.indexOf(edge.getEnd());
                 int r = edge.getColor().getRed();
                 int g = edge.getColor().getGreen();
                 int b = edge.getColor().getBlue();
-                bw.write("E" + " " + startIdx + " " + endIdx + " " + r + " " + g + " " + b + " " + edge.getThickness() + "\n");
+                bw.write(String.format("E %d %d %d %d %d %d %s\n", startIdx, endIdx, r, g, b, edge.getThickness(), edge.getLabel()));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -172,6 +170,19 @@ public class Graph {
         public boolean contains(int x, int y) {
             return point.distance(x, y) <= radius;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Node node = (Node) obj;
+            return point.equals(node.point);
+        }
+
+        @Override
+        public int hashCode() {
+            return point.hashCode();
+        }
     }
 
     public static class Edge {
@@ -179,16 +190,14 @@ public class Graph {
         private Node end;
         private Color color;
         private int thickness;
+        private String label;
 
-        public Edge(Node start, Node end) {
-            this(start, end, Color.BLACK, 3);
-        }
-
-        public Edge(Node start, Node end, Color color, int thickness) {
+        public Edge(Node start, Node end, Color color, int thickness, String label) {
             this.start = start;
             this.end = end;
             this.color = color;
             this.thickness = thickness;
+            this.label = label;
         }
 
         public Node getStart() {
@@ -214,5 +223,14 @@ public class Graph {
         public void setThickness(int thickness) {
             this.thickness = thickness;
         }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
     }
 }
+

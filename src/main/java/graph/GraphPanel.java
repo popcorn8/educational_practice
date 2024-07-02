@@ -1,17 +1,18 @@
 package graph;
 
 import javax.swing.*;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.text.NumberFormat;
 
 public class GraphPanel extends JPanel {
     private Graph graph;
     private Graph.Node selectedNode;
 
     public GraphPanel() {
-
         this.graph = new Graph();
         selectedNode = null;
 
@@ -22,9 +23,6 @@ public class GraphPanel extends JPanel {
                     Graph.Node node = graph.findNode(e.getX(), e.getY());
                     if (node == null) {
                         graph.addNode(e.getX(), e.getY());
-//                        System.out.println(graph.getNodes().getFirst().getPoint().getX() + " " + graph.getNodes().getFirst().getPoint().getY());
-//                        graph.loadGraph("src/main/resources/save_graph.txt");
-//                        graph.saveGraph("src/main/resources/save_graph.txt");
                         repaint();
                     } else {
                         selectedNode = node;
@@ -43,7 +41,7 @@ public class GraphPanel extends JPanel {
                         }
                     }
                     repaint();
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
+                } else if (e.getButton() == MouseEvent.BUTTON2) { // Middle mouse button
                     Graph.Node node = graph.findNode(e.getX(), e.getY());
                     if (node != null) {
                         selectedNode = node;
@@ -51,6 +49,17 @@ public class GraphPanel extends JPanel {
                         setEdgesColor(selectedNode, Color.RED);
                         repaint();
                     }
+                } else if (e.getButton() == MouseEvent.BUTTON3 + 1) { // Fourth mouse button
+                    Graph.Edge edge = graph.findEdge(e.getX(), e.getY());
+                    if (edge != null) {
+                        String label = showInputDialog("Enter edge label:", edge.getLabel());
+                        if (label != null) {
+                            edge.setLabel(label);
+                        }
+                    }
+                    repaint();
+                } else if (e.getButton() == MouseEvent.BUTTON3 + 2) { // Fifth mouse button
+                    graph.loadGraph("src/main/resources/graph1.txt");
                 }
             }
 
@@ -60,14 +69,14 @@ public class GraphPanel extends JPanel {
                     if (selectedNode != null) {
                         Graph.Node node = graph.findNode(e.getX(), e.getY());
                         if (node != null && node != selectedNode) {
-                            graph.addEdge(selectedNode, node, Color.RED, 3);
+                            graph.addEdge(selectedNode, node, Color.RED, 3, ""); // Default empty label
                         }
                         selectedNode.setColor(Color.BLACK);
                         setEdgesColor(selectedNode, Color.BLACK);
                         selectedNode = null;
                     }
                     repaint();
-                } else if (SwingUtilities.isMiddleMouseButton(e)) {
+                } else if (e.getButton() == MouseEvent.BUTTON2) { // Middle mouse button
                     if (selectedNode != null) {
                         selectedNode.setColor(Color.BLACK);
                         setEdgesColor(selectedNode, Color.BLACK);
@@ -99,6 +108,35 @@ public class GraphPanel extends JPanel {
         }
     }
 
+    private String showInputDialog(String message, String initialValue) {
+        JFormattedTextField textField = createNumberTextField();
+        if (initialValue != null && !initialValue.isEmpty()) {
+            try {
+                textField.setValue(Integer.parseInt(initialValue));
+            } catch (NumberFormatException e) {
+                textField.setValue(0); // Если initialValue не является числом, установить значение по умолчанию
+            }
+        } else {
+            textField.setValue(0); // Установить значение по умолчанию, если initialValue пустой
+        }
+        int result = JOptionPane.showConfirmDialog(this, textField, message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            return textField.getText();
+        }
+        return null;
+    }
+
+    private JFormattedTextField createNumberTextField() {
+        NumberFormat format = NumberFormat.getIntegerInstance();
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setValueClass(Integer.class);
+        formatter.setMinimum(0); // Set minimum value if needed
+        formatter.setMaximum(Integer.MAX_VALUE); // Set maximum value if needed
+        formatter.setAllowsInvalid(false);
+        formatter.setCommitsOnValidEdit(true);
+        return new JFormattedTextField(formatter);
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -108,8 +146,28 @@ public class GraphPanel extends JPanel {
         for (Graph.Edge edge : graph.getEdges()) {
             g2d.setColor(edge.getColor());
             g2d.setStroke(new BasicStroke(edge.getThickness()));
-            g2d.drawLine(edge.getStart().getPoint().x, edge.getStart().getPoint().y,
-                    edge.getEnd().getPoint().x, edge.getEnd().getPoint().y);
+            Point p1 = edge.getStart().getPoint();
+            Point p2 = edge.getEnd().getPoint();
+            g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
+
+            // Draw the label in the middle of the edge
+            String label = edge.getLabel();
+            if (label != null && !label.isEmpty()) {
+                int midX = (p1.x + p2.x) / 2;
+                int midY = (p1.y + p2.y) / 2;
+
+                // Offset the label position slightly
+                int offsetX = 10;
+                int offsetY = 10;
+
+                // Create a bold font
+                Font boldFont = g2d.getFont().deriveFont(Font.BOLD, 12f);
+                g2d.setFont(boldFont);
+                g2d.setColor(Color.BLUE); // Set label color
+
+                // Draw the string with an offset
+                g2d.drawString(label, midX + offsetX, midY - offsetY);
+            }
         }
 
         for (Graph.Node node : graph.getNodes()) {
