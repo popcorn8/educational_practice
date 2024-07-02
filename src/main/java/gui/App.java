@@ -18,7 +18,7 @@ public class App extends JFrame {
     private JButton DeleteButton;
     private JButton DownloadButton;
     private JButton UploadButton;
-    private JPanel graph_panel;
+    private JPanel GraphEditPanel;
     private JScrollPane ConsolePanel;
     private JButton StartButton;
     private JButton PrevStepButton;
@@ -36,17 +36,17 @@ public class App extends JFrame {
         ImageIcon icon = new ImageIcon("src/main/resources/main_icon.png");
         setIconImage(icon.getImage());
         setTitle(Title);
+
         HelpText.setFont(new Font(HelpText.getFont().getName(), HelpText.getFont().getStyle(), 12));
         HelpText.setText("""
                 Нажмите ЛКМ чтобы добавить вершины и связать их ребром.
                 Нажмите ПКМ чтобы удалить вершину/ребро.
                 Нажмите и удерживайте колесико, чтобы перетащить вершину.""");
 
-
         DeleteButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GraphPanel g = (GraphPanel) graph_panel;
+                GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.clearGraph();
             }
         });
@@ -54,7 +54,7 @@ public class App extends JFrame {
         DrawButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GraphPanel g = (GraphPanel) graph_panel;
+                GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.setState(GraphPanelStates.GRAPH_DRAWING);
             }
         });
@@ -62,7 +62,7 @@ public class App extends JFrame {
         EditButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GraphPanel g = (GraphPanel) graph_panel;
+                GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.setState(GraphPanelStates.WEIGHT_CHANGING);
             }
         });
@@ -70,7 +70,7 @@ public class App extends JFrame {
         UploadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GraphPanel g = (GraphPanel) graph_panel;
+                GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.saveGraph("src/main/resources/graph.txt");
             }
         });
@@ -78,8 +78,16 @@ public class App extends JFrame {
         DownloadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                GraphPanel g = (GraphPanel) graph_panel;
+                GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.loadGraph("src/main/resources/graph.txt");
+            }
+        });
+
+        StartButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) GraphEditPanel;
+                g.kruskalAlgorithmFunc();
             }
         });
 
@@ -104,12 +112,12 @@ public class App extends JFrame {
         button.setBorderPainted(false);
 //        button.setFocusPainted(false);
         button.setOpaque(false);
-
-
     }
 
     private void createUIComponents() {
-        graph_panel = new GraphPanel();
+        GraphEditPanel = new GraphPanel();
+        ToolsPanel = new ToolkitPanel();
+        HelpText = new HelpTextArea();
     }
 
 }

@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import graph.*;
 import utils.*;
@@ -167,6 +168,19 @@ public class GraphPanel extends JPanel {
         formatter.setAllowsInvalid(false);
         formatter.setCommitsOnValidEdit(true);
         return new JFormattedTextField(formatter);
+    }
+
+    public void kruskalAlgorithmFunc(){
+        KruskalAlgorithm kruskal = new KruskalAlgorithm(graph);
+        ArrayList<Integer> steps = kruskal.KruskalOST();
+        for (int index : steps) {
+            System.out.println(index + "-> " + graph.getEdges().get(index) + ": " + graph.getEdges().get(index).getLabel());
+            Edge edge = graph.getEdges().get(index);
+            edge.setColor(Color.GREEN);
+            graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(Color.GREEN);
+            graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(Color.GREEN);
+        }
+        repaint();
     }
 
     @Override

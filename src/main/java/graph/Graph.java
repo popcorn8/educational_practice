@@ -21,6 +21,10 @@ public class Graph {
         nodes.add(new Node(x, y));
     }
 
+    public void addNode(Node node) {
+        nodes.add(node);
+    }
+
     public void removeNode(Node node) {
         nodes.remove(node);
         Iterator<Edge> iterator = edges.iterator();
@@ -33,6 +37,11 @@ public class Graph {
     }
 
     public void addEdge(Node start, Node end, Color color, int thickness, String label) {
+        for (Edge edge : edges) {
+            if (edge.getStart().equals(start) && edge.getEnd().equals(end)) {
+                return;
+            }
+        }
         edges.add(new Edge(start, end, color, thickness, label));
     }
 
@@ -87,8 +96,11 @@ public class Graph {
                     // Node line
                     int x = Integer.parseInt(parts[1]);
                     int y = Integer.parseInt(parts[2]);
-                    Node node = new Node(x, y);
-                    addNode(x, y);
+                    int r = Integer.parseInt(parts[3]);
+                    int g = Integer.parseInt(parts[4]);
+                    int b = Integer.parseInt(parts[5]);
+                    Node node = new Node(x, y, new Color(r, g, b));
+                    addNode(node);
                     fileNodes.add(node);
                 } else if (parts[0].equals("E")) {
                     // Edge line
@@ -114,15 +126,20 @@ public class Graph {
     public void saveGraph(String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             for (Node node : nodes) {
-                bw.write(String.format("N %d %d\n", node.getPoint().x, node.getPoint().y));
+//                int r = node.getColor().getRed();
+//                int g = node.getColor().getGreen();
+//                int b = node.getColor().getBlue();
+//                bw.write(String.format("N %d %d %d %d %d\n", node.getPoint().x, node.getPoint().y, r, g, b));
+                bw.write(String.format("N %d %d 0 0 0\n", node.getPoint().x, node.getPoint().y));
             }
             for (Edge edge : edges) {
                 int startIdx = nodes.indexOf(edge.getStart());
                 int endIdx = nodes.indexOf(edge.getEnd());
-                int r = edge.getColor().getRed();
-                int g = edge.getColor().getGreen();
-                int b = edge.getColor().getBlue();
-                bw.write(String.format("E %d %d %d %d %d %d %s\n", startIdx, endIdx, r, g, b, edge.getThickness(), edge.getLabel()));
+//                int r = edge.getColor().getRed();
+//                int g = edge.getColor().getGreen();
+//                int b = edge.getColor().getBlue();
+//                bw.write(String.format("E %d %d %d %d %d %d %s\n", startIdx, endIdx, r, g, b, edge.getThickness(), edge.getLabel()));
+                bw.write(String.format("E %d %d 0 0 0 %d %s\n", startIdx, endIdx, edge.getThickness(), edge.getLabel()));
             }
         } catch (IOException e) {
             e.printStackTrace();
