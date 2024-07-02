@@ -34,7 +34,6 @@ public class GraphPanel extends JPanel {
                         } else {
                             selectedNode = node;
                             selectedNode.setColor(Color.RED);
-//                            setEdgesColor(selectedNode, Color.RED);
                         }
                         repaint();
                     } else if (SwingUtilities.isRightMouseButton(e)) {
@@ -138,6 +137,11 @@ public class GraphPanel extends JPanel {
     public void saveGraph(String filename) {
         graph.saveGraph(filename);
         repaint();
+    }
+
+    public void kruskalAlgorithmFunc(){
+        KruskalAlgorithm kruskal = new KruskalAlgorithm(graph);
+        kruskal.KruskalOST();
     }
 
     private String showInputDialog(String message, String initialValue) {

@@ -82,6 +82,14 @@ public class App extends JFrame {
             }
         });
 
+        StartButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                GraphPanel g = (GraphPanel) graph_panel;
+                g.kruskalAlgorithmFunc();
+            }
+        });
+
         setContentPane(MainPanel);
         setVisible(true);
 

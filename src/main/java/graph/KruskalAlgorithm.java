@@ -3,51 +3,82 @@ package graph;
 import java.util.*;
 
 public class KruskalAlgorithm {
-    List<Graph.Edge> edges;
-    List<Graph.Edge> mstEdges;
-    List<Graph.Node> nodes;
 
-    // Constructor
-    public KruskalAlgorithm(List<Graph.Edge> edges, List<Graph.Node> nodes) {
-        this.edges = new ArrayList<>(edges);
-        this.nodes = nodes;
+    private List<Edge> edges;
+    private List<Edge> sort_edges;
+    private List<Node> nodes;
 
-        // Sort edges by weight (parsed from label)
-        this.edges.sort(Comparator.comparingInt(edge -> Integer.parseInt(edge.getLabel())));
-        this.mstEdges = new ArrayList<>();
+    public KruskalAlgorithm(Graph graph) {
+        this.edges = new ArrayList<>(graph.getEdges());
+        this.sort_edges = new ArrayList<>(graph.getEdges());;
+        // Sort edges by weight
+        this.sort_edges.sort(Comparator.comparingInt(edge -> Integer.parseInt(edge.getLabel())));
+        this.nodes = new ArrayList<>(graph.getNodes());;
+
+
+//        for (Edge edge : this.edges) {
+//            System.out.println(edge + " " + this.edges.indexOf(edge));
+//        }
+
+        System.out.println();
+
+        for (Edge edge : this.sort_edges) {
+            System.out.println(edge + " " + this.edges.indexOf(edge));
+        }
+
+
     }
 
-    public List<Graph.Edge> computeMST() {
-        Map<Graph.Node, Graph.Node> parent = new HashMap<>();
-        for (Graph.Node node : nodes) {
-            parent.put(node, node);
+    public void KruskalOST(){
+        Map<Integer, Integer> KruskalList = new HashMap<>();
+        ArrayList<Integer> KruskalOstList = new ArrayList<>();
+        for(Edge edge : this.sort_edges){ //создаём сет всех вершин
+            KruskalList.put(this.nodes.indexOf(edge.getStart()), this.nodes.indexOf(edge.getStart()));
+            KruskalList.put(this.nodes.indexOf(edge.getEnd()), this.nodes.indexOf(edge.getEnd()));
         }
 
-        for (Graph.Edge edge : edges) {
-            Graph.Node root1 = find(parent, edge.getStart());
-            Graph.Node root2 = find(parent, edge.getEnd());
+        if(KruskalList.size() != this.nodes.size() || KruskalList.isEmpty()){
+            throw new IllegalStateException("Граф несвязный");
+        }
+        System.out.println(KruskalList);
 
-            if (root1 != root2) {
-                mstEdges.add(edge);
-                parent.put(root1, root2);
+        for(Edge edge : this.sort_edges){
+//            System.out.println(edge);
+            int src = this.nodes.indexOf(edge.getStart());
+            int dest = this.nodes.indexOf(edge.getEnd());
+            if(!(KruskalList.get(src).equals(KruskalList.get(dest)))){
+                Integer max = Math.max(KruskalList.get(src), KruskalList.get(dest));
+                Integer min = Math.min(KruskalList.get(src), KruskalList.get(dest));
+                for(Map.Entry<Integer, Integer> entry: KruskalList.entrySet()){
+                    if(entry.getValue().equals(min)){
+                        entry.setValue(max);
+                    }
+                }
+                KruskalOstList.add(this.edges.indexOf(edge));
+//                System.out.println(edge + " in alg");
+                if(KruskalOstList.size() == this.nodes.size() - 1){ //Остовное дерево построено, выходим из алгоритма
+                    break;
+                }
+
+//                // Check if all keys in KruskalList have the same value
+//                if (new HashSet<>(KruskalOstList).size() == 1) {
+//                    break;
+//                }
+
             }
 
-            if (mstEdges.size() == nodes.size() - 1) {
-                break;
-            }
         }
 
-        if (mstEdges.size() != nodes.size() - 1) {
-            throw new IllegalStateException("Graph is disconnected");
+        System.out.println(KruskalOstList);
+        System.out.println(KruskalList.toString());
+//        System.out.println(KruskalList.values());
+        if(new HashSet<>(KruskalList.values()).size() == 1){
+//            System.out.println(KruskalList);
+//            System.out.println();
+            System.out.println(KruskalOstList);
+        } else{
+            throw new IllegalStateException("Граф несвязный");
         }
 
-        return mstEdges;
-    }
-
-    private Graph.Node find(Map<Graph.Node, Graph.Node> parent, Graph.Node node) {
-        if (parent.get(node) != node) {
-            parent.put(node, find(parent, parent.get(node)));
-        }
-        return parent.get(node);
     }
 }
