@@ -1,11 +1,14 @@
 package gui;
 
+import javax.naming.InitialContext;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -72,7 +75,8 @@ public class GraphPanel extends JPanel {
                     if (selectedNode != null) {
                         Node node = graph.findNode(e.getX(), e.getY());
                         if (node != null && node != selectedNode) {
-                            graph.addEdge(selectedNode, node, Color.RED, 3, "1");
+                            String label = showInputDialog("Введите вес ребра:", "");
+                            graph.addEdge(selectedNode, node, Color.RED, 3, label);
                         }
                         selectedNode.setColor(DEFAULT_GRAPH_COLOR);
                         setEdgesColor(selectedNode, DEFAULT_GRAPH_COLOR);
@@ -94,7 +98,7 @@ public class GraphPanel extends JPanel {
                 if (current_state == GraphPanelStates.WEIGHT_CHANGING) {
                     Edge edge = graph.findEdge(e.getX(), e.getY());
                     if (edge != null) {
-                        String label = showInputDialog("Enter edge label:", edge.getLabel());
+                        String label = showInputDialog("Введите вес ребра:", edge.getLabel());
                         if (label != null) {
                             edge.setLabel(label);
                         }
@@ -136,36 +140,70 @@ public class GraphPanel extends JPanel {
         repaint();
     }
 
-    public void loadGraph(String filename) {
-        graph.loadGraph(filename);
+    public void loadGraph() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Загрузить граф");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
+        fileChooser.setFileFilter(filter);
+
+        int option = fileChooser.showOpenDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File fileToLoad = fileChooser.getSelectedFile();
+            if (fileToLoad != null && fileToLoad.getName().endsWith(".txt")) {
+                graph.loadGraph(fileToLoad.getAbsolutePath());
+            } else {
+                JOptionPane.showMessageDialog(this, "Выбранный файл не является текстовым файлом (*.txt)", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        }
         repaint();
     }
 
-    public void saveGraph(String filename) {
-        graph.saveGraph(filename);
-        repaint();
+    public void saveGraph() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Сохранить граф");
+
+        int option = fileChooser.showSaveDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            String filename = fileChooser.getSelectedFile().getAbsolutePath();
+            if (!filename.toLowerCase().endsWith(".txt")) {
+                filename += ".txt"; // Пример: сохранение в текстовый файл
+            }
+            graph.saveGraph(filename);
+        }
     }
+
 
     private String showInputDialog(String message, String initialValue) {
         JFormattedTextField textField = createNumberTextField();
+
         if (initialValue != null && !initialValue.isEmpty()) {
             try {
                 textField.setValue(Integer.parseInt(initialValue));
             } catch (NumberFormatException e) {
                 textField.setValue(0); // Если initialValue не является числом, установить значение по умолчанию
+                initialValue = "0";
             }
         } else {
-            textField.setValue(0); // Установить значение по умолчанию, если initialValue пустой
+            initialValue = "0";
         }
+
         int result = JOptionPane.showConfirmDialog(this, textField, message, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        textField.requestFocusInWindow();
         if (result == JOptionPane.OK_OPTION) {
-            return textField.getText();
+            String input = textField.getText();
+            if (input == null || input.trim().isEmpty()) {
+                input = "0"; // Устанавливаем значение по умолчанию, если ввод пустой
+            }
+            return input;
         }
-        return null;
+        return initialValue;
     }
 
     private JFormattedTextField createNumberTextField() {
         NumberFormat format = NumberFormat.getIntegerInstance();
+        format.setGroupingUsed(false); // Отключаем разделение на группы
         NumberFormatter formatter = new NumberFormatter(format);
         formatter.setValueClass(Integer.class);
         formatter.setMinimum(0); // Set minimum value if needed
@@ -174,6 +212,7 @@ public class GraphPanel extends JPanel {
         formatter.setCommitsOnValidEdit(true);
         return new JFormattedTextField(formatter);
     }
+
 
     public void kruskalAlgorithmFunc(JTextArea console) {
         KruskalAlgorithm kruskal = new KruskalAlgorithm(graph);
@@ -244,7 +283,7 @@ public class GraphPanel extends JPanel {
             graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_GRAPH_COLOR);
             graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_GRAPH_COLOR);
             if (step > 0) {
-                index = kruskal_steps.get(step-1);
+                index = kruskal_steps.get(step - 1);
                 Edge prev_edge = graph.getEdges().get(index);
                 prev_edge.setColor(DEFAULT_COLOR_FOR_OST);
                 graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
