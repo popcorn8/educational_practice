@@ -3,7 +3,7 @@ package graph;
 import javax.swing.*;
 import java.awt.*;
 
-public class Edge extends JComponent {
+public class Edge {
     private Node start;
     private Node end;
     private Color color;
@@ -52,10 +52,5 @@ public class Edge extends JComponent {
 
     public void setLabel(String label) {
         this.label = label;
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-
     }
 }

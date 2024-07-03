@@ -8,8 +8,12 @@ public class Node {
     private Color color;
 
     public Node(int x, int y) {
+        this(x, y, Color.BLACK);
+    }
+
+    public Node(int x, int y, Color color) {
         this.point = new Point(x, y);
-        this.color = Color.BLACK;
+        this.color = color;
     }
 
     public Point getPoint() {
