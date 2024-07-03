@@ -11,6 +11,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import graph.*;
 import utils.*;
@@ -21,6 +22,10 @@ public class GraphPanel extends JPanel {
     private Node selectedNode;
     private GraphPanelStates current_state = GraphPanelStates.GRAPH_DRAWING;
     int step;
+    int old_graph_hash;
+    KruskalAlgorithm kruskal;
+    ArrayList<Integer> kruskal_steps;
+
     Color DEFAULT_GRAPH_COLOR = Color.BLACK;
     Color DEFAULT_COLOR_FOR_OST = Color.GREEN;
     Color DEFAULT_PREV_STEP_COLOR = Color.BLUE;
@@ -30,6 +35,9 @@ public class GraphPanel extends JPanel {
         this.graph = new Graph();
         selectedNode = null;
         step = 0;
+        this.old_graph_hash = Objects.hash(graph.getNodes(), graph.getEdges());
+        this.kruskal = new KruskalAlgorithm(graph);
+        this.kruskal_steps = new ArrayList<>();
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -137,6 +145,7 @@ public class GraphPanel extends JPanel {
 
     public void clearGraph() {
         graph.clearGraph();
+        step = 0;
         repaint();
     }
 
@@ -157,6 +166,7 @@ public class GraphPanel extends JPanel {
             }
         }
         repaint();
+        step = 0;
     }
 
     public void saveGraph() {
@@ -215,83 +225,107 @@ public class GraphPanel extends JPanel {
 
 
     public void kruskalAlgorithmFunc(JTextArea console) {
-        KruskalAlgorithm kruskal = new KruskalAlgorithm(graph);
-        ArrayList<Integer> kruskal_steps = kruskal.KruskalOST();
+        int current_graph_hash = Objects.hash(graph.getNodes(), graph.getEdges());
+//        System.out.println(current_graph_hash);
+        if (current_graph_hash != old_graph_hash) {
+            kruskal = new KruskalAlgorithm(graph);
+            old_graph_hash = current_graph_hash;
+            kruskal_steps = kruskal.KruskalOST();
+        }
+
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
+        } else {
+            for (int index : kruskal_steps) {
+//                System.out.println(index + "-> " + graph.getEdges().get(index) + ": " + graph.getEdges().get(index).getLabel());
+                Edge edge = graph.getEdges().get(index);
+                edge.setColor(DEFAULT_COLOR_FOR_OST);
+                graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
+                graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
+                console.setText(console.getText() + "Шаг " + index + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
+            }
+            step = kruskal_steps.size();
+            repaint();
         }
-        for (int index : kruskal_steps) {
-            System.out.println(index + "-> " + graph.getEdges().get(index) + ": " + graph.getEdges().get(index).getLabel());
-            Edge edge = graph.getEdges().get(index);
-            edge.setColor(DEFAULT_COLOR_FOR_OST);
-            graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
-            graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
-            console.setText(console.getText() + "Шаг " + index + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
-        }
-        step = kruskal_steps.size();
-        repaint();
+
     }
 
     public void kruskalNextStep(JTextArea console) {
-        KruskalAlgorithm kruskal = new KruskalAlgorithm(graph);
-        ArrayList<Integer> kruskal_steps = kruskal.KruskalOST();
+        int current_graph_hash = Objects.hash(graph.getNodes(), graph.getEdges());
+//        System.out.println(current_graph_hash);
+        if (current_graph_hash != old_graph_hash) {
+            kruskal = new KruskalAlgorithm(graph);
+            old_graph_hash = current_graph_hash;
+            kruskal_steps = kruskal.KruskalOST();
+        }
+
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
-        }
-        if (step >= kruskal_steps.size()) {
+        } else{
+            if (step >= kruskal_steps.size()) {
 
-            JOptionPane.showMessageDialog(this, "Алгоритм завершен!");
-        } else {
-            int index = kruskal_steps.get(step);
-            Edge edge = graph.getEdges().get(index);
-            edge.setColor(DEFAULT_COLOR_FOR_OST);
-            graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
-            graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
-            if (step > 1) {
-                index = kruskal_steps.get(step - 2);
-                Edge predprev_edge = graph.getEdges().get(index);
-                predprev_edge.setColor(DEFAULT_COLOR_FOR_OST);
-                graph.getNodes().get(graph.getNodes().indexOf(predprev_edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
-                graph.getNodes().get(graph.getNodes().indexOf(predprev_edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
+                JOptionPane.showMessageDialog(this, "Алгоритм завершен!");
+            } else {
+                int index = kruskal_steps.get(step);
+                Edge edge = graph.getEdges().get(index);
+                edge.setColor(DEFAULT_COLOR_FOR_OST);
+                graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
+                graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
+                if (step > 1) {
+                    index = kruskal_steps.get(step - 2);
+                    Edge predprev_edge = graph.getEdges().get(index);
+                    predprev_edge.setColor(DEFAULT_COLOR_FOR_OST);
+                    graph.getNodes().get(graph.getNodes().indexOf(predprev_edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
+                    graph.getNodes().get(graph.getNodes().indexOf(predprev_edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
+                }
+                if (step > 0 && step < kruskal_steps.size() - 1) {
+                    index = kruskal_steps.get(step - 1);
+                    Edge prev_edge = graph.getEdges().get(index);
+                    prev_edge.setColor(DEFAULT_PREV_STEP_COLOR);
+                    graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getStart())).setColor(DEFAULT_PREV_STEP_COLOR);
+                    graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getEnd())).setColor(DEFAULT_PREV_STEP_COLOR);
+                }
+                console.setText(console.getText() + "Шаг " + step + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
+                step++;
             }
-            if (step > 0 && step < kruskal_steps.size() - 1) {
-                index = kruskal_steps.get(step - 1);
-                Edge prev_edge = graph.getEdges().get(index);
-                prev_edge.setColor(DEFAULT_PREV_STEP_COLOR);
-                graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getStart())).setColor(DEFAULT_PREV_STEP_COLOR);
-                graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getEnd())).setColor(DEFAULT_PREV_STEP_COLOR);
-            }
-            console.setText(console.getText() + "Шаг " + step + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
-            step++;
+            repaint();
         }
-        repaint();
+
     }
 
     public void kruskalPrevStep(JTextArea console) {
-        KruskalAlgorithm kruskal = new KruskalAlgorithm(graph);
-        ArrayList<Integer> kruskal_steps = kruskal.KruskalOST();
+        int current_graph_hash = Objects.hash(graph.getNodes(), graph.getEdges());
+//        System.out.println(current_graph_hash);
+        if (current_graph_hash != old_graph_hash) {
+            kruskal = new KruskalAlgorithm(graph);
+            old_graph_hash = current_graph_hash;
+            kruskal_steps = kruskal.KruskalOST();
+        }
+
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
-        }
-        if (step == 0) {
-            JOptionPane.showMessageDialog(this, "Текущий шаг алгоритма - первый!");
-        } else {
-            step--;
-            int index = kruskal_steps.get(step);
-            Edge edge = graph.getEdges().get(index);
-            edge.setColor(DEFAULT_GRAPH_COLOR);
-            graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_GRAPH_COLOR);
-            graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_GRAPH_COLOR);
-            if (step > 0) {
-                index = kruskal_steps.get(step - 1);
-                Edge prev_edge = graph.getEdges().get(index);
-                prev_edge.setColor(DEFAULT_COLOR_FOR_OST);
-                graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
-                graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
+        } else{
+            if (step == 0) {
+                JOptionPane.showMessageDialog(this, "Текущий шаг алгоритма - первый!");
+            } else {
+                step--;
+                int index = kruskal_steps.get(step);
+                Edge edge = graph.getEdges().get(index);
+                edge.setColor(DEFAULT_GRAPH_COLOR);
+                graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_GRAPH_COLOR);
+                graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_GRAPH_COLOR);
+                if (step > 0) {
+                    index = kruskal_steps.get(step - 1);
+                    Edge prev_edge = graph.getEdges().get(index);
+                    prev_edge.setColor(DEFAULT_COLOR_FOR_OST);
+                    graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
+                    graph.getNodes().get(graph.getNodes().indexOf(prev_edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
+                }
+                console.setText(console.getText() + "Шаг " + step + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
             }
-            console.setText(console.getText() + "Шаг " + step + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
+            repaint();
         }
-        repaint();
+
     }
 
     @Override

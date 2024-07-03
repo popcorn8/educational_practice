@@ -15,9 +15,9 @@ public class KruskalAlgorithm {
         this.sort_edges.sort(Comparator.comparingInt(edge -> Integer.parseInt(edge.getLabel())));
         this.nodes = new ArrayList<>(graph.getNodes());
 
-        for (Edge edge : this.sort_edges) {
-            System.out.println(edge.getLabel() + " " + this.edges.indexOf(edge));
-        }
+//        for (Edge edge : this.sort_edges) {
+//            System.out.println(edge.getLabel() + " " + this.edges.indexOf(edge));
+//        }
     }
 
     public ArrayList<Integer> KruskalOST(){
@@ -29,7 +29,7 @@ public class KruskalAlgorithm {
         }
 
         if(KruskalList.size() != this.nodes.size() || KruskalList.isEmpty()){
-            System.out.println("Граф несвязный!");
+//            System.out.println("Граф несвязный!");
             return new ArrayList<>();
         }
 //        System.out.println(KruskalList);
@@ -53,10 +53,11 @@ public class KruskalAlgorithm {
 
         }
 
-        System.out.println(KruskalOstList);
-        System.out.println(KruskalList.toString());
+//        System.out.println(KruskalOstList);
+//        System.out.println(KruskalList.toString());
         if(new HashSet<>(KruskalList.values()).size() == 1){
-            System.out.println(KruskalOstList);
+//            System.out.println(KruskalOstList);
+            System.out.println("робит");
         } else{
             return new ArrayList<>();
         }
