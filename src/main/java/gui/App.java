@@ -60,6 +60,10 @@ public class App extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.setState(GraphPanelStates.GRAPH_DRAWING);
+                HelpText.setText("""
+                Нажмите ЛКМ чтобы добавить вершины и связать их ребром.
+                Нажмите ПКМ чтобы удалить вершину/ребро.
+                Нажмите и удерживайте колесико, чтобы перетащить вершину.""");
             }
         });
 
@@ -68,6 +72,8 @@ public class App extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 GraphPanel g = (GraphPanel) GraphEditPanel;
                 g.setState(GraphPanelStates.WEIGHT_CHANGING);
+                HelpText.setText("""
+                Нажмите ЛКМ на ребро чтобы изменить вес.""");
             }
         });
 
@@ -75,7 +81,7 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 GraphPanel g = (GraphPanel) GraphEditPanel;
-                g.saveGraph("src/main/resources/graph.txt");
+                g.saveGraph();
             }
         });
 
@@ -83,7 +89,7 @@ public class App extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 GraphPanel g = (GraphPanel) GraphEditPanel;
-                g.loadGraph("src/main/resources/graph.txt");
+                g.loadGraph();
             }
         });
 
