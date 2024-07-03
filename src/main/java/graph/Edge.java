@@ -3,7 +3,7 @@ package graph;
 import javax.swing.*;
 import java.awt.*;
 
-public class Edge {
+public class Edge extends JComponent {
     private Node start;
     private Node end;
     private Color color;
@@ -11,7 +11,7 @@ public class Edge {
     private String label;
 
     public Edge(Node start, Node end) {
-        this(start, end, Color.BLACK, 3, "");
+        this(start, end, Color.BLACK, 2, "");
     }
 
     public Edge(Node start, Node end, Color color, int thickness, String label) {
@@ -54,21 +54,8 @@ public class Edge {
         this.label = label;
     }
 
-//    @Override
-//    public String toString() {
-//        return String.format(
-//                "Edge[start=(%d, %d), end=(%d, %d), color=%s, thickness=%d, label=%s]",
-//                start.getPoint().x, start.getPoint().y,
-//                end.getPoint().x, end.getPoint().y,
-//                color.toString(), thickness, label
-//        );
-//    }
-
     @Override
-    public String toString() {
-        return String.format(
-                "label=%s",
-                label
-        );
+    protected void paintComponent(Graphics g) {
+
     }
 }
