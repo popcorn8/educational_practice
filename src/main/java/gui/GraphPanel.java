@@ -312,8 +312,19 @@ public class GraphPanel extends JPanel {
                 int index = kruskal_steps.get(step);
                 Edge edge = graph.getEdges().get(index);
                 edge.setColor(DEFAULT_GRAPH_COLOR);
-                graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_GRAPH_COLOR);
-                graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_GRAPH_COLOR);
+                Node node1 = graph.getNodes().get(graph.getNodes().indexOf(edge.getStart()));
+                Node node2 = graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd()));
+                boolean flag1 = true;
+                boolean flag2 = true;
+                for (int ind = 0; ind < step; ind++) {
+                    int i = kruskal_steps.get(ind);
+                    if (graph.getEdges().get(i).getStart().equals(node1) || graph.getEdges().get(i).getEnd().equals(node1))
+                        flag1 = false;
+                    if (graph.getEdges().get(i).getStart().equals(node2) || graph.getEdges().get(i).getEnd().equals(node2))
+                        flag2 = false;
+                }
+                if (flag1) node1.setColor(DEFAULT_GRAPH_COLOR);
+                if (flag2) node2.setColor(DEFAULT_GRAPH_COLOR);
                 if (step > 0) {
                     index = kruskal_steps.get(step - 1);
                     Edge prev_edge = graph.getEdges().get(index);
