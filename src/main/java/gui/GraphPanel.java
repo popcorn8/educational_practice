@@ -236,13 +236,13 @@ public class GraphPanel extends JPanel {
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
         } else {
-            for (int index : kruskal_steps) {
+            for (int i = step; i < kruskal_steps.size(); i++) {
 //                System.out.println(index + "-> " + graph.getEdges().get(index) + ": " + graph.getEdges().get(index).getLabel());
-                Edge edge = graph.getEdges().get(index);
+                Edge edge = graph.getEdges().get(kruskal_steps.get(i));
                 edge.setColor(DEFAULT_COLOR_FOR_OST);
                 graph.getNodes().get(graph.getNodes().indexOf(edge.getStart())).setColor(DEFAULT_COLOR_FOR_OST);
                 graph.getNodes().get(graph.getNodes().indexOf(edge.getEnd())).setColor(DEFAULT_COLOR_FOR_OST);
-                console.setText(console.getText() + "Шаг " + index + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
+                console.setText(console.getText() + "Шаг " + i + ": " + "Выбрано ребро с весом " + edge.getLabel() + "\n");
             }
             step = kruskal_steps.size();
             repaint();
@@ -261,7 +261,7 @@ public class GraphPanel extends JPanel {
 
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
-        } else{
+        } else {
             if (step >= kruskal_steps.size()) {
 
                 JOptionPane.showMessageDialog(this, "Алгоритм завершен!");
@@ -304,7 +304,7 @@ public class GraphPanel extends JPanel {
 
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
-        } else{
+        } else {
             if (step == 0) {
                 JOptionPane.showMessageDialog(this, "Текущий шаг алгоритма - первый!");
             } else {
