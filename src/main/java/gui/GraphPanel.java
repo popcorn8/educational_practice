@@ -236,7 +236,7 @@ public class GraphPanel extends JPanel {
         if (kruskal_steps.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Для такого графа алгоритм не сработает!");
         } else {
-            for (int i = step; i < kruskal_steps.size(); i++) {
+            for (int i = 0; i < kruskal_steps.size(); i++) {
 //                System.out.println(index + "-> " + graph.getEdges().get(index) + ": " + graph.getEdges().get(index).getLabel());
                 Edge edge = graph.getEdges().get(kruskal_steps.get(i));
                 edge.setColor(DEFAULT_COLOR_FOR_OST);
